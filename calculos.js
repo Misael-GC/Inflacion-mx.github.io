@@ -22,7 +22,7 @@ function onClickButtonDeflacion(){
         return aniosBase.anioB === anioBaseValue;  
     };
     // Ahora se busca si el dato ingresado por el user esta registrado en el array
-    const userAnioBase = inpc.find(isAnioBaseValueValid);
+    const userAnioBase = inpc.find(isAnioBaseValueValid); //si en el futuro quieres que se escoja por mes pon este
     
     //si no esta arroja este mensaje
     if (!userAnioBase){
