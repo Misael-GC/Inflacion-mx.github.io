@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./estyle.css">
+    <title>Inflación</title>
+</head>
+<body>
+    <header>
+        <h1>Inflación</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Calcula cunato se ha depreciado tu valor adquisitivo </h2>
+            <form action="">
+                <label for="Inputmoney" >Escribe el valor de tu dinero</label>
+                <input id="Inputmoney" type="number">
+
+                <label for="InputAnio">Elige un año actual o el que quieras saber cuanto perdiste en valor</label>
+                <input id="InputAnio" type="text">
+
+                <label for="InputAnioBase">Elige un año base</label>
+                <input id="InputAnioBase" type="text">
+
+                <button type="button" onclick="onClickButtonDeflacion()">
+                Calcular deflacion
+              </button>
+
+              <p id="ResultP"></p>
+            </form>
+        </section>
+    </main>
+    <script src="./datos.js"></script>
+    <script src="./calculos.js"></script>
+</body>
+</html>
