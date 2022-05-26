@@ -1,4 +1,133 @@
+/* Forma de poner las declaraciones 
+1. Pocisionamiento
+2. Modelo de caja 
+3. Tipografía --- fuentes, tamaño de fuentes
+4. Temas visuales ----> shadom box, border radius
+5. Otros
+*/
+:root{
+    --white-color: #d0d0d0;
+    --black-color: #2c2f33;
+    --green-color: #99c84a;
+    --dark-color: #181818;
+  }
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 html{
-    background-color: black;
-    color: lime;
+    font-size: 62.5%;
+    font-family: 'DM Sans', sans-serif;
+   /* scroll-behavior: smooth; te desliza al tocar un boton relacionado con una sección*/
+}
+
+body{
+    background: var(--white-color);
+}
+a{
+    text-decoration: none;
+}
+
+ul{
+    list-style: none;
+}
+/*------------------------------------------------*/
+.header{
+    width: 100%;
+    min-height: 12vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 0px 2rem 10px;
+    background-color: var(--black-color);
+    border-bottom: 5px solid var(--green-color);
+}
+
+.header div{
+    color: var(--white-color);
+}
+
+.header--nav{
+    display: flex;
+    width: 70px; /*editar el espacio del home y menu*/
+    height: 30px;
+    align-items: center;
+    background-color: var(--black-color);
+}
+
+.header--nav ul{
+    display: flex;
+    gap: 7px;
+}
+
+.header--nav ul .header--nav_home{
+    font-size: 1.4rem;
+    color: var(--white-color);
+}
+
+.logo-menu{
+        font-size: 2rem;
+        color: var(--white-color);
+}
+
+/*-------------------------------------------------*/
+
+.container__main{
+    display: grid;
+    grid-template-areas: 
+    "section1 section2"
+    "section3 section3"
+    ;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 80% 20%;
+    gap: 10px;
+    height: 80vh;
+    width: 100%;
+    background: var(--white-color);
+}
+
+.main-container-sub{
+    grid-area: section1;
+    padding: 20px 10px;
+    font-size: 1.2rem;
+    background: var(--white-color);
+}
+
+.container-form{
+    grid-area: section2;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    padding-top: 10px;
+    margin-top: 10px;
+    max-width: 90%;
+    font-size: 1.2rem;
+    background: var(--white-color);
+}
+
+.form-principal{
+    display: flex;
+    flex-direction: column;
+    width:90%;
+    border-radius: 1rem;
+    background: var(--white-color);
+    border: 5px solid var(--black-color);
+    box-shadow: 0 10px 15px rgb(0 0 0 / 50%);;
+    overflow: hidden; /*va a ocultar texto si se sale*/
+}
+
+.form-label{
+    width: 80%;
+    justify-content: center;
+    align-self: center;
+}
+input{
+    width: 80%;
+    margin: 0 10px;
+    align-self: center;
+    border: none;
+    padding: 0.5rem;
 }

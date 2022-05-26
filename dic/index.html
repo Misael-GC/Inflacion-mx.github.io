@@ -6,28 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../estyle.css">
     <title>Inflación</title>
+    <script src="https://kit.fontawesome.com/af0bf7190a.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>Inflación</h1>
+    <header class="header">
+        <div>
+            <h1>Inflación MX    </h1>
+        </div>
+        <nav class="header--nav">
+            <ul>
+                <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="header--nav_home">Home</a></li>
+                <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="logo-menu"><i class="fa-solid fa-bars"></i></a></li>
+            </ul>
+        </nav>
     </header>
-    <main>
-        <section>
-            <h2>Calcula cunato se ha depreciado tu valor adquisitivo </h2>
-            <form action="">
-                <label for="Inputmoney" >Escribe el valor de tu dinero</label>
-                <input id="Inputmoney" type="number">
+    <main class="container__main">
+        <div class="main-container-sub">
+            <h2>Calcula el valor del dinero en el tiempo</h2> <br>
+            <p>Advertencia: el calculo es anual, es decir el calculo es de diciembre  de cada año. <br> <br> Por el momento el calculo esta disponible hasta 2021 <br><br>
+            Pronto se subiran el anual de cada mes, y tendrás resultados actuales :)</p>
+        </div>
+        <section class="container-form">
+            <form action="" class="form-principal"><br>
+                <label class="form-label" for="Inputmoney" >Escribe el valor de tu dinero</label>
+                <input id="Inputmoney" type="number"> <br>
 
-                <label for="InputAnio">Elige un año actual o el que quieras saber cuanto perdiste en valor</label>
-                <input id="InputAnio" type="text">
+                <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
+                <input id="InputAnio" type="text"><br>
 
-                <label for="InputAnioBase">Elige un año base</label>
-                <input id="InputAnioBase" type="text">
+                <label class="form-label" for="InputAnioBase">Elige un año base</label>
+                <input id="InputAnioBase" type="text"><br>
 
                 <button type="button" onclick="onClickButtonDeflacion()">
                 Calcular deflacion
-              </button>
-
+              </button><br>
               <p id="ResultP"></p>
             </form>
         </section>
