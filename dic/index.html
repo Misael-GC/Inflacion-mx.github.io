@@ -11,7 +11,7 @@
 <body>
     <header class="header">
         <div>
-            <h1>Inflación MX    </h1>
+            <h1>Inflación en México    </h1>
         </div>
         <nav class="header--nav">
             <ul>
@@ -22,9 +22,9 @@
     </header>
     <main class="container__main">
         <div class="main-container-sub">
-            <h2>Calcula el valor del dinero en el tiempo</h2> <br>
-            <p>Advertencia: el calculo es anual, es decir el calculo es de diciembre  de cada año. <br> <br> Por el momento el calculo esta disponible hasta 2021 <br><br>
-            Pronto se subiran el anual de cada mes, y tendrás resultados actuales :)</p>
+            <h2>Calcula el efecto de la inflación en el poder adquisitivo del dinero</h2> <br>
+            <p> <strong>Advertencia:</strong>  el calculo es anual, es decir, de diciembre  de cada año. <br> <br> Por el momento el calculo esta disponible hasta <strong> 2021</strong> <br><br>
+            Pronto subiré el anual de cada mes, y tendrás resultados actuales <i class="fa-solid fa-face-smile-wink"></i></p>
         </div>
         <section class="container-form">
             <form action="" class="form-principal"><br>
@@ -38,12 +38,24 @@
                 <input id="InputAnioBase" type="text"><br>
 
                 <button type="button" onclick="onClickButtonDeflacion()">
-                Calcular deflacion
+                Calcular
               </button><br>
               <p id="ResultP"></p>
             </form>
         </section>
+        <section class="main--instrucciones">
+            <div>
+
+                <p><strong>Año actual o más reciente:</strong> es el numerador, es mayor al año base</p> <br>
+
+                <p><strong>Año base:</strong> es el denominador, es menor al año actual o más reciente</p>
+            </div>
+        </section>
     </main>
+    <footer>
+        <div></div>
+        <div></div>
+    </footer>
     <script src="./datos.js"></script>
     <script src="../calculos.js"></script>
 </body>

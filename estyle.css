@@ -81,8 +81,8 @@ ul{
     "section1 section2"
     "section3 section3"
     ;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: 80% 20%;
+    /* grid-template-columns: 50% 50%;
+    grid-template-rows: 80% 20%; */
     gap: 10px;
     height: 80vh;
     width: 100%;
@@ -108,6 +108,14 @@ ul{
     background: var(--white-color);
 }
 
+.main--instrucciones{
+    grid-area: section3;
+    width: 90%;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    color: var(--black-color);
+}
+
 .form-principal{
     display: flex;
     flex-direction: column;
@@ -128,6 +136,27 @@ input{
     width: 80%;
     margin: 0 10px;
     align-self: center;
-    border: none;
+    padding: 0.3rem; /*cambiar a 0.5 cuando crezca */
+    text-align: center;
+    outline: 3px  var(--black-color);
+    border-radius: 2rem;
+}
+button{
+    width: 100%;
     padding: 0.5rem;
+    border: none;
+    font-family: "Roboto", sans-serif;
+    outline: none;
+    background-color: var(--green-color);
+    cursor: pointer;
+}
+
+/*--------------footer-------------------*/
+
+footer{
+    width: 100%;
+    height: 10vh;
+    text-align: center;
+    border-top: 10px solid var(--green-color);
+    background: var(--black-color);
 }
