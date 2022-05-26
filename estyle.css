@@ -154,9 +154,20 @@ button{
 /*--------------footer-------------------*/
 
 footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 10vh;
     text-align: center;
     border-top: 10px solid var(--green-color);
     background: var(--black-color);
+}
+footer div{
+    margin: 10px 7px;
+}
+
+footer div a i{
+    font-size: 2rem;
+    color: var(--white-color);
 }
