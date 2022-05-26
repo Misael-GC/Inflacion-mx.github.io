@@ -10,3 +10,4 @@ Aplicación de conocimientos:
  - Operaciones mátematicas
  - Web Responsive
 
+![](https://pbs.twimg.com/media/FTqD9B8WIAU1jkZ?format=png&name=small)
