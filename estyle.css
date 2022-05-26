@@ -75,14 +75,14 @@ ul{
 
 /*-------------------------------------------------*/
 
-.container__main{
+.container__main{/**//**/
     display: grid;
     grid-template-areas: 
     "section1 section2"
     "section3 section3"
     ;
-    /* grid-template-columns: 50% 50%;
-    grid-template-rows: 80% 20%; */
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 80% 20%;
     gap: 10px;
     height: 80vh;
     width: 100%;
@@ -127,10 +127,11 @@ ul{
     overflow: hidden; /*va a ocultar texto si se sale*/
 }
 
-.form-label{
+.form-label{/*font-size 1.2rem*/
     width: 80%;
     justify-content: center;
     align-self: center;
+    font-size: 1.2rem;
 }
 input{
     width: 80%;
@@ -145,7 +146,6 @@ button{
     width: 100%;
     padding: 0.5rem;
     border: none;
-    font-family: "Roboto", sans-serif;
     outline: none;
     background-color: var(--green-color);
     cursor: pointer;

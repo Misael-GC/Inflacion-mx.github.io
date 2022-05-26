@@ -1,0 +1,61 @@
+.header div{
+    font-size: 2rem;
+}
+
+
+.header--nav{
+    display: flex;
+    width: 100px; /*editar el espacio del home y menu*/
+    height: 30px;
+    align-items: center;
+    background-color: var(--black-color);
+}
+
+/**/
+
+
+.header--nav ul .header--nav_home{
+    font-size: 2rem;
+}
+
+.logo-menu{
+    font-size: 2.5rem;
+    color: var(--white-color);
+}
+/*-----------------------------------------*/
+
+.container__main{/**//**/
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 60% 40%;
+}
+.main-container-sub{
+    font-size: 2.5rem;
+    justify-content: center;
+    align-content: center;
+}
+
+.main--instrucciones {
+    margin: 25px 10px;
+    font-size: 2.5rem;
+}
+
+.form-label{/*font-size 1.2rem*/
+    font-size: 2rem;
+}
+
+input{
+    width: 80%;
+    margin: 0px;
+    padding: 1rem; /*cambiar a 0.5 cuando crezca */
+    outline: 5px  var(--black-color);
+    border-radius: 3rem;
+}
+
+button{
+    padding: 2rem;
+}
+
+footer div a i{
+    font-size: 3.5rem;
+    color: var(--white-color);
+}
