@@ -19,12 +19,20 @@
 <body>
     <header class="header">
         <div>
-            <h1>Inflación en México    </h1>
+            <h1>Inflación en México</h1>
         </div>
         <nav class="header--nav">
-            <ul>
-                <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="header--nav_home">Home</a></li>
-                <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="logo-menu"><i class="fa-solid fa-bars"></i></a></li>
+            <ul class="menu-horizontal">
+                <li class="li-meses">
+                    <a href="#" class="meses"><i class="fa-solid fa-bars"></i></a>
+                    <ul class="menu-vertical">
+                        <li><a href="./enero/enero.html">Enero</a></li>
+                        <li><a href="./enero/enero.html">Enero</a></li>
+                        <li><a href="./enero/enero.html">Enero</a></li>
+                    </ul>
+                </li>
+                <!-- <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="header--nav_home">Home</a></li> -->
+                <!-- <li><a href="https://misael-gc.github.io/misael-page.github.io/" class="logo-menu"><i class="fa-solid fa-bars"></i></a></li> -->
             </ul>
         </nav>
     </header>
@@ -37,7 +45,7 @@
         <section class="container-form">
             <form action="" class="form-principal"><br>
                 <label class="form-label" for="Inputmoney" >Escribe el valor de tu dinero</label>
-                <input id="Inputmoney" type="number" placeholder="100"> <br>
+                <input id="Inputmoney" type="number" placeholder="$100"> <br>
 
                 <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
                 <input id="InputAnio" type="text" placeholder="2019"><br>

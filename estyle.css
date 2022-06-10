@@ -40,7 +40,7 @@ ul{
     min-height: 12vh;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* space-between */
     padding: 2rem 0px 2rem 10px;
     background-color: var(--black-color);
     border-bottom: 5px solid var(--green-color);
@@ -52,7 +52,7 @@ ul{
 
 .header--nav{
     display: flex;
-    width: 70px; /*editar el espacio del home y menu*/
+    width: 40px; /*editar el espacio del home y menu*/
     height: 30px;
     align-items: center;
     background-color: var(--black-color);
@@ -63,6 +63,54 @@ ul{
     gap: 7px;
 }
 
+/*---------------------------------------------*/
+.menu-horizontal{
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+}
+
+.menu-horizontal .li-meses{
+    align-self: center;
+}
+
+.menu-horizontal li a {
+    display: inline-block;
+    color: #d0d0d0;
+}
+
+.menu-horizontal li .meses{
+    font-size: 20px;
+    margin: 5px;
+}
+
+.menu-horizontal li:hover{
+    background-color:#99c84a ;
+}
+.menu-horizontal .menu-vertical{
+    position: absolute;
+    display: none;
+    width: 100px;
+    background-color: rgb(0, 0, 0, .5);
+}
+
+.menu-horizontal li:hover .menu-vertical{
+    display: flex;
+    flex-direction: column;
+    width: 65px;
+}
+
+.menu-vertical li:hover{
+    background-color: var(--dark-color);
+}
+
+.menu-vertical li a{
+    display: flex;
+    flex-direction: column;
+    color: var(--white-color);
+    padding: 7px 10px 5px 10px;
+}
+/*-------------------------*/
 .header--nav ul .header--nav_home{
     font-size: 1.4rem;
     color: var(--white-color);
