@@ -60,7 +60,7 @@ ul{
 
 .header--nav ul{
     display: flex;
-    gap: 7px;
+    /* gap: 7px; */
 }
 
 /*---------------------------------------------*/
@@ -72,6 +72,7 @@ ul{
 
 .menu-horizontal .li-meses{
     align-self: center;
+    margin-right: 10px;
 }
 
 .menu-horizontal li a {
@@ -97,7 +98,7 @@ ul{
 .menu-horizontal li:hover .menu-vertical{
     display: flex;
     flex-direction: column;
-    width: 65px;
+    width:35px; /*elñ width de las letras*/
 }
 
 .menu-vertical li:hover{
@@ -107,8 +108,8 @@ ul{
 .menu-vertical li a{
     display: flex;
     flex-direction: column;
+    padding: 7px 0px 5px 5px;
     color: var(--white-color);
-    padding: 7px 10px 5px 10px;
 }
 /*-------------------------*/
 .header--nav ul .header--nav_home{
