@@ -23,7 +23,12 @@
     color: var(--white-color);
 }
 /*-----------------------------------------*/
+.container-sub_advertencia{
+    font-size: 1.6rem;
+}
 
+
+/*----------------------------*/
 .container__main{/**//**/
     grid-template-columns: 50% 50%;
     grid-template-rows: 60% 40%;
