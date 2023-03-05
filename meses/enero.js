@@ -120,5 +120,10 @@ const inpc = [
         anioB: "2022",
         valor: 118.002,
     },
+    {
+        name: "2023",
+        anioB: "2023",
+        valor: 127.336,
+    },
 ];
 

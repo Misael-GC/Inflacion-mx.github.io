@@ -115,5 +115,10 @@ const inpc = [
         anioB: "2021",
         valor: 117.308,
     },
+    {
+        name: "2022",
+        anioB: "2022",
+        valor: 126.478,
+    },
 ];
 
