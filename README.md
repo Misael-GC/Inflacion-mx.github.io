@@ -7,7 +7,8 @@ Aplicación de conocimientos:
  - Condicionales
  - Algoritmos
  - Conexión de HTML con JS
- - Operaciones mátematicas
+ - CSS
+ - Operaciones mátematicas financieras
  - Web Responsive
 
 ![](https://pbs.twimg.com/media/FTqD9B8WIAU1jkZ?format=png&name=small)
