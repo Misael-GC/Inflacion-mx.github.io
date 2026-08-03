@@ -778,3 +778,27 @@ function showShareModal(text) {
         }
     });
 }
+
+// Descargar Gráfica
+window.downloadChart = function() {
+    const canvas = document.getElementById('inflationChart');
+    if (!canvas) return;
+    
+    // Forzamos un color de fondo para la imagen (ya que canvas es transparente por defecto)
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    const isDarkMode = document.body.classList.contains("light-mode") ? false : true;
+    ctx.fillStyle = isDarkMode ? '#1e1e2d' : '#ffffff'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    const imgUrl = canvas.toDataURL('image/png');
+    ctx.restore(); // Restaurar para no afectar la gráfica visual en pantalla
+    
+    const link = document.createElement('a');
+    link.href = imgUrl;
+    link.download = `Inflacion-MX-grafica.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}

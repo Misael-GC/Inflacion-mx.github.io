@@ -654,6 +654,27 @@ input:checked + .slider:before {
     box-shadow: 0 0 15px var(--green-glow);
 }
 
+/*----------------- Download Chart Button -----------------*/
+.download-chart-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.download-chart-btn:hover {
+    color: var(--green-color);
+    border-color: var(--green-color);
+    background: rgba(153, 200, 74, 0.1);
+}
+
 /*----------------- Media Queries (Responsive) -----------------*/
 @media (max-width: 900px) {
     .container__main {

@@ -115,6 +115,9 @@
 
         <!-- Nueva sección para la gráfica interactiva -->
         <section class="main--chart" id="chart-section" style="display: none;">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+                <button type="button" class="download-chart-btn" onclick="downloadChart()" title="Descargar gráfica como imagen"><i class="fa-solid fa-download"></i> Guardar Imagen</button>
+            </div>
             <div class="chart-wrapper">
                 <canvas id="inflationChart"></canvas>
             </div>
