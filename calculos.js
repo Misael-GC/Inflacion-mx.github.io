@@ -1,10 +1,10 @@
-//Guia descuento.js
-//Que quieres resolver? calcular la inflación en México
-//Encuentra las formulas para encontrar el resultado
-//define variables y funciones para resolver tus formulas 
-//crea un pagina web 
+// Guia descuento.js
+// Que quieres resolver? calcular la inflación en México
+// Encuentra las formulas para encontrar el resultado
+// define variables y funciones para resolver tus formulas 
+// crea un pagina web 
 // organiza y documenta tu código para que sea más facil de leer y entender 
-//Publicalo en tu github y muestra el link y show in the platzi box 
+// Publicalo en tu github y muestra el link y show in the platzi box 
 
 function showModal(message) {
     let modalOverlay = document.getElementById("custom-modal-overlay");
@@ -34,7 +34,7 @@ function showModal(message) {
 }
 
 function onClickButtonDeflacion(){
-    //Extraemos el valor de la caja
+    // Extraemos el valor de la caja
     const Inputmoney = document.getElementById("Inputmoney");
     const moneyValue = Inputmoney.value;
 
@@ -50,41 +50,51 @@ function onClickButtonDeflacion(){
         return;
     }
 
-    //preparamos el contexto para ver si el dato que metio el user es valido con .anioB es decir, se ingresa se le agrega la propiedad 
+    // Asegurarnos de que los datos de inflación estén cargados en window.inpc
+    const activeInpc = window.inpc;
+    if (!activeInpc) {
+        showModal("Los datos de inflación no se han cargado correctamente. Por favor intenta de nuevo en unos momentos.");
+        return;
+    }
+
+    // preparamos el contexto para ver si el dato que metio el user es valido con .anioB
     const isAnioBaseValueValid = function(aniosBase){
         return aniosBase.anioB === anioBaseValue;  
     };
     // Ahora se busca si el dato ingresado por el user esta registrado en el array
-    const userAnioBase = inpc.find(isAnioBaseValueValid); //si en el futuro quieres que se escoja por mes pon este
+    const userAnioBase = activeInpc.find(isAnioBaseValueValid);
     
-    //si no esta arroja este mensaje
+    // si no esta arroja este mensaje
     if (!userAnioBase){
         showModal(`El año ${anioBaseValue} aún no está registrado.`);
         return;
     }
-    //si existe el dato hace esto para que en la siguiente funcion se pueda calcular la deflacion de acuerdo al año base que el user quiera
+    // si existe el dato hace esto
     else{
         valoresBase = userAnioBase.valor;
     }
-    //funcion para calcular la deflación
-    function calcularDeflacion(money, valor){/// calcularlos
+    
+    // funcion para calcular la deflación
+    function calcularDeflacion(money, valor){
         const factor = valoresBase / valor;
         const dinero = money * factor;
         
         return dinero;
     }
+    
     // se prepara el contexto para checar si el dato que ingreso el user  
     const isAnioValueValid = function(anios){ 
         return anios.name === anioValue;
     };
-    //  Buscar si el dato que ingreso el user existe en el array
-    const userAnio = inpc.find(isAnioValueValid);
+    // Buscar si el dato que ingreso el user existe en el array
+    const userAnio = activeInpc.find(isAnioValueValid);
+    
     // si no existe pon esto
     if (!userAnio){
         showModal(`El año ${anioValue} aún no está registrado.`);
         return;
     }
-    //si existe pon este calculo 
+    // si existe pon este calculo 
     else {
         valores = userAnio.valor;
         const valordeflactado = calcularDeflacion(moneyValue, valores);
@@ -116,6 +126,58 @@ function onClickButtonDeflacion(){
     }
 }
 
+// Mapeo de meses y sus respectivos archivos de datos e identificadores visuales
+const monthMapping = {
+    enero: { file: "enero.js", display: "Enero" },
+    febrero: { file: "feb.js", display: "Febrero" },
+    marzo: { file: "marzo.js", display: "Marzo" },
+    abril: { file: "abril.js", display: "Abril" },
+    mayo: { file: "mayo.js", display: "Mayo" },
+    junio: { file: "junion.js", display: "Junio" },
+    julio: { file: "julio.js", display: "Julio" },
+    agosto: { file: "agosto.js", display: "Agosto" },
+    septiembre: { file: "sep.js", display: "Septiembre" },
+    octubre: { file: "oct.js", display: "Octubre" },
+    noviembre: { file: "nov.js", display: "Noviembre" },
+    diciembre: { file: "dic.js", display: "Diciembre" }
+};
+
+let currentMonth = localStorage.getItem("selectedMonth") || "diciembre";
+
+async function loadMonthData(monthKey) {
+    const config = monthMapping[monthKey] || monthMapping.diciembre;
+    try {
+        const response = await fetch(`./meses/${config.file}`);
+        if (!response.ok) {
+            throw new Error(`No se pudo cargar la información para ${config.display}`);
+        }
+        const scriptText = await response.text();
+        
+        // Convertimos el "const inpc =" de los scripts a "window.inpc =" para evitar errores de redeclaración en ámbito global
+        const modifiedScript = scriptText.replace(/const\s+inpc\s*=/, "window.inpc =");
+        
+        // Ejecutamos dinámicamente el script
+        new Function(modifiedScript)();
+        
+        // Actualizamos el DOM del mes activo
+        const activeMonthText = document.getElementById("active-month-text");
+        if (activeMonthText) {
+            activeMonthText.innerText = config.display;
+        }
+        
+        currentMonth = monthKey;
+        localStorage.setItem("selectedMonth", monthKey);
+        
+        // Ocultar resultados previos al cambiar de mes
+        const resultP = document.getElementById("ResultP");
+        if (resultP) {
+            resultP.classList.remove("show");
+        }
+    } catch (error) {
+        showModal(`Error al cargar datos de inflación: ${error.message}`);
+    }
+}
+
 // Lógica de modo oscuro / claro dinámico
 const currentTheme = localStorage.getItem("theme") || "dark";
 if (currentTheme === "light") {
@@ -123,6 +185,7 @@ if (currentTheme === "light") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Configurar e inyectar el switch de modo oscuro / claro
     const headerNav = document.querySelector(".header--nav");
     if (headerNav) {
         const toggleBtn = document.createElement("button");
@@ -160,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 toggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
             }
         });
-        
+
         toggleBtn.addEventListener("mouseenter", () => {
             toggleBtn.style.color = "var(--green-color)";
         });
@@ -170,4 +233,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         headerNav.insertBefore(toggleBtn, headerNav.firstChild);
     }
+
+    // Configurar los clicks en los meses
+    const monthLinks = document.querySelectorAll(".month-link");
+    monthLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const selectedMonthKey = link.getAttribute("data-month");
+            loadMonthData(selectedMonthKey);
+        });
+    });
+
+    // Cargar los datos del mes seleccionado por defecto al inicio
+    loadMonthData(currentMonth);
 });
