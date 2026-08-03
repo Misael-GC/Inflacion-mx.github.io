@@ -9,6 +9,13 @@ Una aplicación web interactiva que permite a los usuarios calcular el efecto de
 * **Modo Oscuro / Claro**: Interfaz moderna y dinámica que respeta tu preferencia de visualización guardándola localmente.
 * **Arquitectura Limpia**: Código construido sobre principios SOLID utilizando únicamente Vanilla JavaScript, logrando un proyecto sumamente ligero y mantenible.
 
+## 💡 ¿Por qué es importante esta herramienta? (El valor que otorga)
+
+* **Pérdida real del poder adquisitivo:** Te indica exactamente cuánto rendimiento mínimo anual acumulado debió generar tu dinero o tus inversiones para no perder valor frente a la inflación en un horizonte histórico o proyectado a 5 años.
+* **Ajustes de contratos a largo plazo:** Es la herramienta matemática adecuada para calcular incrementos en rentas, precios de servicios o presupuestos plurianuales considerando el interés compuesto de la inflación.
+* **Análisis de Ingresos (Modo Histórico):** Te permite descubrir si tu sueldo o tus ganancias realmente crecieron con el paso de los años, o si en realidad perdiste poder adquisitivo frente al encarecimiento de la vida. Es un argumento sólido para negociar aumentos salariales.
+* **Proyección y Concientización Financiera:** Al usar su Modo Futuro (basado en la Tasa de Crecimiento Anual Compuesto o CAGR), ayuda al usuario a visualizar cómo se "derrite" el dinero inactivo y fomenta la educación financiera.
+
 ## 🚀 Arquitectura
 El proyecto es una **Single Page Application (SPA)** nativa que no requiere frameworks pesados. Todo está manejado con **HTML semántico, CSS moderno y JavaScript**.
 

@@ -33,112 +33,139 @@ function showModal(message) {
     modalOverlay.classList.add("active");
 }
 
+let isFutureMode = false;
+
 function onClickButtonDeflacion(){
-    // Extraemos el valor de la caja y sanitizamos limpiando espacios
+    // Extraemos el valor del dinero (común para ambos modos)
     const Inputmoney = document.getElementById("Inputmoney");
     const rawMoneyValue = Inputmoney.value.trim();
-
-    const InputAnio = document.getElementById("InputAnio");
-    const rawAnioValue = InputAnio.value.trim();
-
-    const InputAnioBase = document.getElementById("InputAnioBase");
-    const rawAnioBaseValue = InputAnioBase.value.trim();
-
-    // Validación 1: Campos vacíos
-    if (!rawMoneyValue || !rawAnioValue || !rawAnioBaseValue) {
-        showModal("Por favor, llena todos los campos para poder realizar el cálculo.");
-        return;
-    }
-
-    // Validación 2: Conversión estricta a números (Prevención de inyección y XSS)
-    // Usamos Number() para evitar que "10a" pase como válido (como haría parseInt)
     const moneyValue = Number(rawMoneyValue);
-    const anioValue = Number(rawAnioValue);
-    const anioBaseValue = Number(rawAnioBaseValue);
 
-    // Validación 3: Tipos de datos y estructura correcta (evita letras o NaN)
-    if (isNaN(moneyValue) || isNaN(anioValue) || isNaN(anioBaseValue)) {
-        showModal("Error: Ingresa únicamente valores numéricos válidos. No se permiten letras ni símbolos raros.");
+    if (!rawMoneyValue || isNaN(moneyValue) || moneyValue <= 0) {
+        showModal("Por favor, ingresa una cantidad de dinero válida mayor a 0.");
         return;
     }
 
-    // Validación 4: Rangos lógicos y matemáticos
-    if (moneyValue <= 0) {
-        showModal("El valor del dinero debe ser mayor a 0.");
-        return;
-    }
-
-    if (!Number.isInteger(anioValue) || !Number.isInteger(anioBaseValue)) {
-        showModal("Los años deben ser números enteros.");
-        return;
-    }
-
-    // Validación 5: Limitar años históricos (Banxico tiene registros sólidos desde ~1969)
-    if (anioValue < 1969 || anioValue > 2100 || anioBaseValue < 1969 || anioBaseValue > 2100) {
-        showModal("Por favor ingresa años válidos (entre 1969 y la actualidad).");
-        return;
-    }
-    
-    if (anioBaseValue >= anioValue) {
-        showModal("El año base debe ser estrictamente menor al año actual o más reciente.");
-        return;
-    }
-
-    // Asegurarnos de que los datos de inflación estén cargados en window.inpc
     const activeInpc = window.inpc;
-    if (!activeInpc) {
+    if (!activeInpc || activeInpc.length === 0) {
         showModal("Los datos de inflación no se han cargado correctamente. Por favor intenta de nuevo en unos momentos.");
         return;
     }
 
-    // preparamos el contexto para ver si el dato que metio el user es valido con .anioB
-    const isAnioBaseValueValid = function(aniosBase){
-        return String(aniosBase.anioB) === String(anioBaseValue);  
-    };
-    // Ahora se busca si el dato ingresado por el user esta registrado en el array
-    const userAnioBase = activeInpc.find(isAnioBaseValueValid);
-    
-    // si no esta arroja este mensaje
-    if (!userAnioBase){
-        showModal(`El año ${anioBaseValue} aún no está registrado.`);
-        return;
-    }
-    // si existe el dato hace esto
-    else{
-        valoresBase = userAnioBase.valor;
-    }
-    
-    // funcion para calcular la deflación
-    function calcularDeflacion(money, valor){
-        const factor = valoresBase / valor;
-        const dinero = money * factor;
+    if (isFutureMode) {
+        // --- MODO FUTURO (Proyección) ---
+        const InputAnioFuturo = document.getElementById("InputAnioFuturo");
+        const rawFuture = InputAnioFuturo.value.trim();
+        const futureYear = Number(rawFuture);
         
-        return dinero;
-    }
-    
-    // se prepara el contexto para checar si el dato que ingreso el user  
-    const isAnioValueValid = function(anios){ 
-        return String(anios.name) === String(anioValue);
-    };
-    // Buscar si el dato que ingreso el user existe en el array
-    const userAnio = activeInpc.find(isAnioValueValid);
-    
-    // si no existe pon esto
-    if (!userAnio){
-        showModal(`El año ${anioValue} aún no está registrado.`);
-        return;
-    }
-    // si existe pon este calculo 
-    else {
-        valores = userAnio.valor;
-        const valordeflactado = calcularDeflacion(moneyValue, valores);
+        const currentYearObj = activeInpc[activeInpc.length - 1]; 
+        const currentYear = Number(currentYearObj.name);
+
+        if (!rawFuture || isNaN(futureYear) || !Number.isInteger(futureYear)) {
+            showModal("Por favor, ingresa un año futuro válido.");
+            return;
+        }
+        
+        if (futureYear <= currentYear || futureYear > 2200) {
+            showModal(`Por favor, ingresa un año a futuro (mayor a ${currentYear}).`);
+            return;
+        }
+
+        // Buscar el año 5 periodos atrás para el CAGR (Tasa de crecimiento anual compuesto)
+        const pastYearIndex = Math.max(0, activeInpc.length - 6);
+        const pastYearObj = activeInpc[pastYearIndex];
+        
+        const inpcRecent = currentYearObj.valor;
+        const inpcPast = pastYearObj.valor;
+        const yearsDiff = currentYear - Number(pastYearObj.name);
+
+        // CAGR Formula
+        const cagr = Math.pow((inpcRecent / inpcPast), (1 / yearsDiff)) - 1;
+        const yearsToProject = futureYear - currentYear;
+        
+        // Calcular pérdida de poder adquisitivo a futuro: Dinero / (1 + CAGR)^Años
+        const futurePurchasingPower = moneyValue / Math.pow((1 + cagr), yearsToProject);
+        
+        const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+        const futureFormatted = formatter.format(futurePurchasingPower);
+        const lossPercent = ((moneyValue - futurePurchasingPower) / moneyValue * 100).toFixed(2);
+        
         const resultP = document.getElementById("ResultP");
+        resultP.innerHTML = `
+            <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Poder Adquisitivo Proyectado (${futureYear}):</div>
+            <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
+            <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">Pérdida proyectada: <strong>${lossPercent}%</strong></div>
+            <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">Basado en inflación CAGR de ${(cagr * 100).toFixed(2)}%</div>
+        `;
+        resultP.classList.add("show");
+
+        const animatedResultEl = document.getElementById("animatedResult");
+        if (animatedResultEl) {
+            animateValue(animatedResultEl, 0, futurePurchasingPower, 1500); 
+        }
+
+        // Generar datos proyectados para la gráfica
+        let projectionData = [];
+        for (let i = 0; i <= yearsToProject; i++) {
+            const year = currentYear + i;
+            const projectedValue = moneyValue / Math.pow((1 + cagr), i);
+            projectionData.push({
+                name: String(year),
+                valor: projectedValue 
+            });
+        }
         
-        const formatter = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN'
-        });
+        renderInflationChart(projectionData, currentYear, moneyValue, true);
+        saveToHistory(moneyValue, currentYear, futureYear, futureFormatted + " 🔮");
         
+    } else {
+        // --- MODO HISTÓRICO ---
+        const InputAnio = document.getElementById("InputAnio");
+        const InputAnioBase = document.getElementById("InputAnioBase");
+        
+        const rawAnioValue = InputAnio.value.trim();
+        const rawAnioBaseValue = InputAnioBase.value.trim();
+        const anioValue = Number(rawAnioValue);
+        const anioBaseValue = Number(rawAnioBaseValue);
+
+        if (!rawAnioValue || !rawAnioBaseValue) {
+            showModal("Por favor, llena todos los campos para poder realizar el cálculo.");
+            return;
+        }
+
+        if (isNaN(anioValue) || isNaN(anioBaseValue) || !Number.isInteger(anioValue) || !Number.isInteger(anioBaseValue)) {
+            showModal("Error: Ingresa únicamente años enteros válidos.");
+            return;
+        }
+
+        if (anioValue < 1969 || anioValue > 2100 || anioBaseValue < 1969 || anioBaseValue > 2100) {
+            showModal("Por favor ingresa años válidos (entre 1969 y la actualidad).");
+            return;
+        }
+        
+        if (anioBaseValue >= anioValue) {
+            showModal("El año base debe ser estrictamente menor al año actual o más reciente.");
+            return;
+        }
+
+        const userAnioBase = activeInpc.find(aniosBase => String(aniosBase.name) === String(anioBaseValue));
+        if (!userAnioBase){
+            showModal(`El año ${anioBaseValue} aún no está registrado.`);
+            return;
+        }
+        const valoresBase = userAnioBase.valor;
+
+        const userAnio = activeInpc.find(anios => String(anios.name) === String(anioValue));
+        if (!userAnio){
+            showModal(`El año ${anioValue} aún no está registrado.`);
+            return;
+        }
+        
+        const valores = userAnio.valor;
+        const factor = valoresBase / valores;
+        const valordeflactado = moneyValue * factor;
+        
+        const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
         const dineroDeflactadoFormateado = formatter.format(valordeflactado);
         const lossPercent = ((moneyValue - valordeflactado) / moneyValue * 100).toFixed(2);
         
@@ -151,6 +178,7 @@ function onClickButtonDeflacion(){
             lossText = `Sin cambios en el poder adquisitivo`;
         }
 
+        const resultP = document.getElementById("ResultP");
         resultP.innerHTML = `
             <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">El valor equivalente es:</div>
             <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
@@ -158,13 +186,11 @@ function onClickButtonDeflacion(){
         `;
         resultP.classList.add("show");
 
-        // --- Animar el número ---
         const animatedResultEl = document.getElementById("animatedResult");
         if (animatedResultEl) {
-            animateValue(animatedResultEl, 0, valordeflactado, 1200); // Animación dura 1.2 segundos
+            animateValue(animatedResultEl, 0, valordeflactado, 1200);
         }
 
-        // --- Renderizar Gráfica ---
         const startYear = Math.min(anioBaseValue, anioValue);
         const endYear = Math.max(anioBaseValue, anioValue);
         
@@ -175,7 +201,8 @@ function onClickButtonDeflacion(){
             })
             .sort((a, b) => Number(a.name) - Number(b.name));
             
-        renderInflationChart(historicalData, anioBaseValue, moneyValue);
+        renderInflationChart(historicalData, anioBaseValue, moneyValue, false);
+        saveToHistory(moneyValue, anioBaseValue, anioValue, dineroDeflactadoFormateado);
     }
 }
 
@@ -201,7 +228,7 @@ function animateValue(obj, start, end, duration) {
 
 let inflationChartInstance = null;
 
-function renderInflationChart(historicalData, anioBaseValue, moneyValue) {
+function renderInflationChart(historicalData, anioBaseValue, moneyValue, isFuture = false) {
     const chartSection = document.getElementById('chart-section');
     const ctx = document.getElementById('inflationChart');
     
@@ -215,13 +242,20 @@ function renderInflationChart(historicalData, anioBaseValue, moneyValue) {
 
     const labels = historicalData.map(item => item.name);
     
-    const baseItem = historicalData.find(item => Number(item.name) === anioBaseValue);
-    const inpcBase = baseItem ? baseItem.valor : historicalData[0].valor;
+    let dataPoints;
+    if (isFuture) {
+        // En modo futuro, los valores ya vienen calculados en 'valor'
+        dataPoints = historicalData.map(item => item.valor.toFixed(2));
+    } else {
+        // En modo histórico, extraemos el INPC base y calculamos deflación
+        const baseItem = historicalData.find(item => Number(item.name) === anioBaseValue);
+        const inpcBase = baseItem ? baseItem.valor : historicalData[0].valor;
 
-    const dataPoints = historicalData.map(item => {
-        const factor = inpcBase / item.valor;
-        return (moneyValue * factor).toFixed(2);
-    });
+        dataPoints = historicalData.map(item => {
+            const factor = inpcBase / item.valor;
+            return (moneyValue * factor).toFixed(2);
+        });
+    }
 
     const isDarkMode = document.body.classList.contains("light-mode") ? false : true;
     const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
@@ -527,6 +561,53 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cargar los datos del mes seleccionado por defecto al inicio
     loadMonthData(currentMonth);
 
+    // Renderizar el historial guardado
+    renderHistory();
+
+    // Configurar Switch de Modos
+    const modeToggle = document.getElementById('modeToggle');
+    const labelHistorico = document.getElementById('label-historico');
+    const labelFuturo = document.getElementById('label-futuro');
+    const historicoInputs = document.getElementById('historico-inputs');
+    const futuroInputs = document.getElementById('futuro-inputs');
+
+    if (modeToggle) {
+        modeToggle.addEventListener('change', (e) => {
+            isFutureMode = e.target.checked;
+            if (isFutureMode) {
+                labelHistorico.classList.remove('active');
+                labelFuturo.classList.add('active');
+                historicoInputs.classList.add('hidden-mode');
+                futuroInputs.classList.remove('hidden-mode');
+                
+                document.getElementById('InputAnio').removeAttribute('required');
+                document.getElementById('InputAnioBase').removeAttribute('required');
+                document.getElementById('InputAnioFuturo').setAttribute('required', 'true');
+            } else {
+                labelHistorico.classList.add('active');
+                labelFuturo.classList.remove('active');
+                historicoInputs.classList.remove('hidden-mode');
+                futuroInputs.classList.add('hidden-mode');
+                
+                document.getElementById('InputAnio').setAttribute('required', 'true');
+                document.getElementById('InputAnioBase').setAttribute('required', 'true');
+                document.getElementById('InputAnioFuturo').removeAttribute('required');
+            }
+            
+            // Limpiar resultados al cambiar
+            const resultP = document.getElementById("ResultP");
+            if(resultP) resultP.classList.remove('show');
+            const chartSection = document.getElementById('chart-section');
+            if(chartSection) chartSection.style.display = 'none';
+        });
+    }
+
+    // Evento para borrar el historial
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', clearHistory);
+    }
+
     // --- PWA: Registro del Service Worker ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -540,3 +621,56 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// --- Lógica del Historial (LocalStorage) ---
+function getHistory() {
+    const history = localStorage.getItem('calcHistory');
+    return history ? JSON.parse(history) : [];
+}
+
+function saveToHistory(money, anioBase, anioActual, resultFormatted) {
+    const history = getHistory();
+    const newEntry = {
+        id: Date.now(),
+        money: money,
+        anioBase: anioBase,
+        anioActual: anioActual,
+        result: resultFormatted
+    };
+    
+    // Insertar al inicio y mantener solo los últimos 5
+    history.unshift(newEntry);
+    const limitedHistory = history.slice(0, 5);
+    localStorage.setItem('calcHistory', JSON.stringify(limitedHistory));
+    
+    renderHistory();
+}
+
+function renderHistory() {
+    const historyList = document.getElementById('history-list');
+    if (!historyList) return;
+    
+    const history = getHistory();
+    
+    if (history.length === 0) {
+        historyList.innerHTML = '<li class="history-empty">Aún no hay cálculos recientes</li>';
+        return;
+    }
+    
+    const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+    
+    historyList.innerHTML = history.map(item => `
+        <li class="history-item">
+            <div class="history-item-details">
+                <span class="history-item-money">${formatter.format(item.money)}</span>
+                <span class="history-item-years">${item.anioBase} &rarr; ${item.anioActual}</span>
+            </div>
+            <div class="history-item-result">${item.result}</div>
+        </li>
+    `).join('');
+}
+
+function clearHistory() {
+    localStorage.removeItem('calcHistory');
+    renderHistory();
+}

@@ -57,22 +57,51 @@
             <br><br>
                 Fuente:  INEGI
             </p>
+
+            <div id="history-container" class="history-container">
+                <div class="history-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Cálculos Recientes</h3>
+                    <button id="clear-history-btn" class="clear-history-btn" title="Borrar Historial"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+                <ul id="history-list" class="history-list">
+                    <li class="history-empty">Aún no hay cálculos recientes</li>
+                </ul>
+            </div>
         </div>
         <section class="container-form">
             <form action="" class="form-principal"><br>
+                <!-- Switch de Modo -->
+                <div class="mode-toggle-container">
+                    <span class="mode-label active" id="label-historico">Histórico</span>
+                    <label class="switch">
+                        <input type="checkbox" id="modeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="mode-label" id="label-futuro">Proyección 🔮</span>
+                </div>
+                
                 <label class="form-label" for="Inputmoney" >Escribe el valor de tu dinero</label>
                 <input id="Inputmoney" type="number" placeholder="100" min="0.01" step="0.01" required> <br>
 
-                <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
-                <input id="InputAnio" type="number" placeholder="2023" min="1969" max="2100" step="1" required><br>
+                <!-- Inputs Modo Histórico -->
+                <div id="historico-inputs">
+                    <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
+                    <input id="InputAnio" type="number" placeholder="2023" min="1969" max="2100" step="1" required><br>
 
-                <label class="form-label" for="InputAnioBase">Elige un año base</label>
-                <input id="InputAnioBase" type="number" placeholder="2000" min="1969" max="2100" step="1" required><br>
+                    <label class="form-label" for="InputAnioBase">Elige un año base</label>
+                    <input id="InputAnioBase" type="number" placeholder="2000" min="1969" max="2100" step="1" required><br>
+                </div>
+
+                <!-- Inputs Modo Futuro -->
+                <div id="futuro-inputs" class="hidden-mode">
+                    <label class="form-label" for="InputAnioFuturo">Año a proyectar (Ej. 2035)</label>
+                    <input id="InputAnioFuturo" type="number" placeholder="2035" min="2024" max="2200" step="1"><br>
+                </div>
 
                 <button type="button" onclick="onClickButtonDeflacion()">
                 Calcular
-              </button><br>
-              <p id="ResultP"></p>
+                </button><br>
+                <p id="ResultP"></p>
             </form>
         </section>
         <section class="main--instrucciones">
