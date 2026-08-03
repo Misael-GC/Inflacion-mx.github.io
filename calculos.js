@@ -325,6 +325,24 @@ document.addEventListener("DOMContentLoaded", () => {
         headerNav.insertBefore(toggleBtn, headerNav.firstChild);
     }
 
+    // Configurar el botón de menú hamburguesa para toggle con click
+    const menuBtn = document.querySelector(".meses");
+    const menuVertical = document.querySelector(".menu-vertical");
+
+    if (menuBtn && menuVertical) {
+        menuBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            menuVertical.classList.toggle("active");
+        });
+
+        // Cerrar el menú al dar clic en cualquier parte fuera del botón o del menú
+        document.addEventListener("click", (e) => {
+            if (!menuBtn.contains(e.target) && !menuVertical.contains(e.target)) {
+                menuVertical.classList.remove("active");
+            }
+        });
+    }
+
     // Configurar los clicks en los meses
     const monthLinks = document.querySelectorAll(".month-link");
     monthLinks.forEach(link => {
@@ -332,6 +350,11 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const selectedMonthKey = link.getAttribute("data-month");
             loadMonthData(selectedMonthKey);
+            
+            // Cerrar el menú tras seleccionar un mes
+            if (menuVertical) {
+                menuVertical.classList.remove("active");
+            }
         });
     });
 
