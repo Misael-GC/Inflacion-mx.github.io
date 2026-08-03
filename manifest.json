@@ -1,0 +1,23 @@
+{
+  "name": "Calculadora de Inflación MX",
+  "short_name": "Inflación MX",
+  "description": "Calcula el efecto de la inflación en el poder adquisitivo del dinero en México.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#181818",
+  "theme_color": "#181818",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icons/icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "./icons/icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

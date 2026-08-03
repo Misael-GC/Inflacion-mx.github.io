@@ -500,4 +500,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Cargar los datos del mes seleccionado por defecto al inicio
     loadMonthData(currentMonth);
+
+    // --- PWA: Registro del Service Worker ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registrado con éxito con el scope: ', registration.scope);
+                })
+                .catch(err => {
+                    console.log('El registro del ServiceWorker falló: ', err);
+                });
+        });
+    }
 });
