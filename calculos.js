@@ -34,19 +34,53 @@ function showModal(message) {
 }
 
 function onClickButtonDeflacion(){
-    // Extraemos el valor de la caja
+    // Extraemos el valor de la caja y sanitizamos limpiando espacios
     const Inputmoney = document.getElementById("Inputmoney");
-    const moneyValue = Inputmoney.value;
+    const rawMoneyValue = Inputmoney.value.trim();
 
     const InputAnio = document.getElementById("InputAnio");
-    const anioValue = InputAnio.value;
+    const rawAnioValue = InputAnio.value.trim();
 
     const InputAnioBase = document.getElementById("InputAnioBase");
-    const anioBaseValue = InputAnioBase.value;
+    const rawAnioBaseValue = InputAnioBase.value.trim();
 
-    // Validación de campos vacíos
-    if (!moneyValue || !anioValue || !anioBaseValue) {
+    // Validación 1: Campos vacíos
+    if (!rawMoneyValue || !rawAnioValue || !rawAnioBaseValue) {
         showModal("Por favor, llena todos los campos para poder realizar el cálculo.");
+        return;
+    }
+
+    // Validación 2: Conversión estricta a números (Prevención de inyección y XSS)
+    // Usamos Number() para evitar que "10a" pase como válido (como haría parseInt)
+    const moneyValue = Number(rawMoneyValue);
+    const anioValue = Number(rawAnioValue);
+    const anioBaseValue = Number(rawAnioBaseValue);
+
+    // Validación 3: Tipos de datos y estructura correcta (evita letras o NaN)
+    if (isNaN(moneyValue) || isNaN(anioValue) || isNaN(anioBaseValue)) {
+        showModal("Error: Ingresa únicamente valores numéricos válidos. No se permiten letras ni símbolos raros.");
+        return;
+    }
+
+    // Validación 4: Rangos lógicos y matemáticos
+    if (moneyValue <= 0) {
+        showModal("El valor del dinero debe ser mayor a 0.");
+        return;
+    }
+
+    if (!Number.isInteger(anioValue) || !Number.isInteger(anioBaseValue)) {
+        showModal("Los años deben ser números enteros.");
+        return;
+    }
+
+    // Validación 5: Limitar años históricos (Banxico tiene registros sólidos desde ~1969)
+    if (anioValue < 1969 || anioValue > 2100 || anioBaseValue < 1969 || anioBaseValue > 2100) {
+        showModal("Por favor ingresa años válidos (entre 1969 y la actualidad).");
+        return;
+    }
+    
+    if (anioBaseValue >= anioValue) {
+        showModal("El año base debe ser estrictamente menor al año actual o más reciente.");
         return;
     }
 

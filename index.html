@@ -50,7 +50,7 @@
             <h2>Calcula el efecto de la inflación en el poder adquisitivo del dinero</h2> <br>
             <p>
                  <strong>Advertencia:</strong>  el calculo es anual, es decir, de <strong id="active-month-text">Diciembre</strong>  de cada año. <br><br>
-            Periodo disponible: Enero 1999 - Enero 2023
+            Periodo disponible es al ultimo mes que Banxico ha publicado, por lo normal es un mes de atraso al actual mes
             <br><br>
                 Fuente:  INEGI
             </p>
@@ -58,13 +58,13 @@
         <section class="container-form">
             <form action="" class="form-principal"><br>
                 <label class="form-label" for="Inputmoney" >Escribe el valor de tu dinero</label>
-                <input id="Inputmoney" type="number" placeholder="100"> <br>
+                <input id="Inputmoney" type="number" placeholder="100" min="0.01" step="0.01" required> <br>
 
                 <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
-                <input id="InputAnio" type="text" placeholder="2019"><br>
+                <input id="InputAnio" type="number" placeholder="2023" min="1969" max="2100" step="1" required><br>
 
                 <label class="form-label" for="InputAnioBase">Elige un año base</label>
-                <input id="InputAnioBase" type="text" placeholder="2000"><br>
+                <input id="InputAnioBase" type="number" placeholder="2000" min="1969" max="2100" step="1" required><br>
 
                 <button type="button" onclick="onClickButtonDeflacion()">
                 Calcular
