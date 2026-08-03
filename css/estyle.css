@@ -429,6 +429,27 @@ footer div a i:hover {
     text-shadow: 0 0 10px var(--green-glow);
 }
 
+/*----------------- Chart Section -----------------*/
+.main--chart {
+    grid-column: span 2;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 4rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    animation: fadeInDown 0.5s ease;
+    overflow: hidden;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+}
+
 /*----------------- Media Queries (Responsive) -----------------*/
 @media (max-width: 900px) {
     .container__main {
@@ -436,7 +457,8 @@ footer div a i:hover {
         gap: 2.5rem;
         margin: 2rem auto;
     }
-    .main--instrucciones {
+    .main--instrucciones,
+    .main--chart {
         grid-column: span 1;
     }
 }
@@ -448,6 +470,12 @@ footer div a i:hover {
     }
     .header h1 {
         font-size: 1.8rem;
+    }
+    .main-container-sub,
+    .form-principal,
+    .main--instrucciones,
+    .main--chart {
+        padding: 2.5rem 1.5rem;
     }
 }
 
@@ -515,3 +543,6 @@ footer div a i:hover {
     font-size: 1.4rem;
     margin-top: 0;
 }
+
+
+

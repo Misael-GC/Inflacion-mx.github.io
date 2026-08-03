@@ -157,7 +157,108 @@ function onClickButtonDeflacion(){
             <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">${lossText}</div>
         `;
         resultP.classList.add("show");
+
+        // --- Renderizar Gráfica ---
+        const startYear = Math.min(anioBaseValue, anioValue);
+        const endYear = Math.max(anioBaseValue, anioValue);
+        
+        const historicalData = activeInpc
+            .filter(item => {
+                const year = Number(item.name);
+                return year >= startYear && year <= endYear;
+            })
+            .sort((a, b) => Number(a.name) - Number(b.name));
+            
+        renderInflationChart(historicalData, anioBaseValue, moneyValue);
     }
+}
+
+let inflationChartInstance = null;
+
+function renderInflationChart(historicalData, anioBaseValue, moneyValue) {
+    const chartSection = document.getElementById('chart-section');
+    const ctx = document.getElementById('inflationChart');
+    
+    if (!chartSection || !ctx) return;
+    
+    chartSection.style.display = 'block';
+
+    if (inflationChartInstance) {
+        inflationChartInstance.destroy();
+    }
+
+    const labels = historicalData.map(item => item.name);
+    
+    const baseItem = historicalData.find(item => Number(item.name) === anioBaseValue);
+    const inpcBase = baseItem ? baseItem.valor : historicalData[0].valor;
+
+    const dataPoints = historicalData.map(item => {
+        const factor = inpcBase / item.valor;
+        return (moneyValue * factor).toFixed(2);
+    });
+
+    const isDarkMode = document.body.classList.contains("light-mode") ? false : true;
+    const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    const textColor = isDarkMode ? '#a0a6b2' : '#6b7280';
+
+    inflationChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Poder Adquisitivo (MXN)',
+                data: dataPoints,
+                borderColor: '#99c84a',
+                backgroundColor: 'rgba(153, 200, 74, 0.2)',
+                borderWidth: 2,
+                pointBackgroundColor: '#99c84a',
+                pointBorderColor: isDarkMode ? '#181818' : '#f3f4f6',
+                pointHoverBackgroundColor: '#aadc5c',
+                pointHoverBorderColor: '#ffffff',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: textColor, font: { family: 'Outfit' } }
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#2c2f33' : '#ffffff',
+                    titleColor: isDarkMode ? '#ffffff' : '#2c2f33',
+                    bodyColor: isDarkMode ? '#a0a6b2' : '#6b7280',
+                    borderColor: '#99c84a',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            let value = context.parsed.y;
+                            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor, drawBorder: false },
+                    ticks: { color: textColor, font: { family: 'Outfit' } }
+                },
+                y: {
+                    grid: { color: gridColor, drawBorder: false },
+                    ticks: {
+                        color: textColor,
+                        font: { family: 'Outfit' },
+                        callback: function(value) { return '$' + value; }
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Mapeo de meses y sus respectivos archivos de datos e identificadores visuales
@@ -346,6 +447,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.body.classList.add("light-mode");
                 localStorage.setItem("theme", "light");
                 toggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+            
+            // Si la gráfica ya está dibujada, la re-dibujamos para que cambie de color (Dark/Light)
+            if (inflationChartInstance) {
+                onClickButtonDeflacion();
             }
         });
 

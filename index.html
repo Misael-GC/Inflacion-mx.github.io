@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./css/desktop.css" media="(min-width:1440px)">
     <title>Inflación</title>
     <script src="https://kit.fontawesome.com/af0bf7190a.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="robots" content="index,follow">
     <meta name="author" content="Misael Gomez Cuautle">
     <meta name="content" content="Calculo del efecto de la inflación a tráves del tiempo">
@@ -78,6 +79,13 @@
                 <p><strong>Año actual o más reciente:</strong> es el numerador, es mayor al año base</p> <br>
 
                 <p><strong>Año base:</strong> es el denominador, es menor al año actual o más reciente</p>
+            </div>
+        </section>
+
+        <!-- Nueva sección para la gráfica interactiva -->
+        <section class="main--chart" id="chart-section" style="display: none;">
+            <div class="chart-wrapper">
+                <canvas id="inflationChart"></canvas>
             </div>
         </section>
     </main>
