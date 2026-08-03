@@ -153,10 +153,16 @@ function onClickButtonDeflacion(){
 
         resultP.innerHTML = `
             <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">El valor equivalente es:</div>
-            <div style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">${dineroDeflactadoFormateado}</div>
+            <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
             <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">${lossText}</div>
         `;
         resultP.classList.add("show");
+
+        // --- Animar el número ---
+        const animatedResultEl = document.getElementById("animatedResult");
+        if (animatedResultEl) {
+            animateValue(animatedResultEl, 0, valordeflactado, 1200); // Animación dura 1.2 segundos
+        }
 
         // --- Renderizar Gráfica ---
         const startYear = Math.min(anioBaseValue, anioValue);
@@ -171,6 +177,26 @@ function onClickButtonDeflacion(){
             
         renderInflationChart(historicalData, anioBaseValue, moneyValue);
     }
+}
+
+// Función para animar números fluidamente (Odómetro)
+function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        
+        // Easing: Frenado suave al final (easeOutQuart)
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+        const current = start + (end - start) * easeOut;
+        
+        obj.innerHTML = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(current);
+        
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 let inflationChartInstance = null;
