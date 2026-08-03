@@ -59,7 +59,7 @@ function onClickButtonDeflacion(){
 
     // preparamos el contexto para ver si el dato que metio el user es valido con .anioB
     const isAnioBaseValueValid = function(aniosBase){
-        return aniosBase.anioB === anioBaseValue;  
+        return String(aniosBase.anioB) === String(anioBaseValue);  
     };
     // Ahora se busca si el dato ingresado por el user esta registrado en el array
     const userAnioBase = activeInpc.find(isAnioBaseValueValid);
@@ -84,7 +84,7 @@ function onClickButtonDeflacion(){
     
     // se prepara el contexto para checar si el dato que ingreso el user  
     const isAnioValueValid = function(anios){ 
-        return anios.name === anioValue;
+        return String(anios.name) === String(anioValue);
     };
     // Buscar si el dato que ingreso el user existe en el array
     const userAnio = activeInpc.find(isAnioValueValid);
@@ -128,36 +128,123 @@ function onClickButtonDeflacion(){
 
 // Mapeo de meses y sus respectivos archivos de datos e identificadores visuales
 const monthMapping = {
-    enero: { file: "enero.js", display: "Enero" },
-    febrero: { file: "feb.js", display: "Febrero" },
-    marzo: { file: "marzo.js", display: "Marzo" },
-    abril: { file: "abril.js", display: "Abril" },
-    mayo: { file: "mayo.js", display: "Mayo" },
-    junio: { file: "junion.js", display: "Junio" },
-    julio: { file: "julio.js", display: "Julio" },
-    agosto: { file: "agosto.js", display: "Agosto" },
-    septiembre: { file: "sep.js", display: "Septiembre" },
-    octubre: { file: "oct.js", display: "Octubre" },
-    noviembre: { file: "nov.js", display: "Noviembre" },
-    diciembre: { file: "dic.js", display: "Diciembre" }
+    enero: { file: "enero.js", display: "Enero", num: "01" },
+    febrero: { file: "feb.js", display: "Febrero", num: "02" },
+    marzo: { file: "marzo.js", display: "Marzo", num: "03" },
+    abril: { file: "abril.js", display: "Abril", num: "04" },
+    mayo: { file: "mayo.js", display: "Mayo", num: "05" },
+    junio: { file: "junion.js", display: "Junio", num: "06" },
+    julio: { file: "julio.js", display: "Julio", num: "07" },
+    agosto: { file: "agosto.js", display: "Agosto", num: "08" },
+    septiembre: { file: "sep.js", display: "Septiembre", num: "09" },
+    octubre: { file: "oct.js", display: "Octubre", num: "10" },
+    noviembre: { file: "nov.js", display: "Noviembre", num: "11" },
+    diciembre: { file: "dic.js", display: "Diciembre", num: "12" }
 };
 
-let currentMonth = localStorage.getItem("selectedMonth") || "diciembre";
+// --- ARQUITECTURA SOLID CON BANXICO API ---
+
+// 1. Clase para leer la configuración (Single Responsibility Principle)
+class Config {
+    static getApiUrl() {
+        return window.APP_CONFIG ? window.APP_CONFIG.API_BANXICO_URL : "/.netlify/functions/banxico";
+    }
+}
+
+// 2. Abstracción del Proveedor de Inflación (Open/Closed Principle & Dependency Inversion)
+class InflationProvider {
+    async getINPCData(monthKey) {
+        throw new Error("getINPCData method must be implemented");
+    }
+}
+
+// 3. Proveedor Concreto: API de Banxico (Strategy Pattern)
+class BanxicoApiInflationProvider extends InflationProvider {
+    constructor() {
+        super();
+        this.cachedData = null;
+    }
+
+    async getINPCData(monthKey) {
+        const monthConfig = monthMapping[monthKey];
+        if (!monthConfig) throw new Error("Mes no válido");
+
+        if (!this.cachedData) {
+            // Consumimos nuestra API Serverless de Netlify que funciona como Proxy seguro
+            const apiUrl = Config.getApiUrl();
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error("Respuesta fallida del servidor de Banxico API");
+            }
+            const json = await response.json();
+            if (!json || !json.bmx || !json.bmx.series || !json.bmx.series[0].datos) {
+                throw new Error("La estructura de datos de Banxico no es la esperada");
+            }
+            this.cachedData = json.bmx.series[0].datos;
+        }
+
+        // Filtramos por el mes solicitado y mapeamos al formato original ({ name, anioB, valor })
+        return this.cachedData
+            .filter(item => {
+                const parts = item.fecha.split('/');
+                return parts[1] === monthConfig.num;
+            })
+            .map(item => {
+                const year = item.fecha.split('/')[2];
+                return {
+                    name: year,
+                    anioB: year,
+                    valor: parseFloat(item.dato)
+                };
+            });
+    }
+}
+
+// 4. Proveedor Concreto: Fallback de Archivos Locales (Strategy Pattern)
+class LocalFileInflationProvider extends InflationProvider {
+    async getINPCData(monthKey) {
+        const monthConfig = monthMapping[monthKey] || monthMapping.diciembre;
+        const response = await fetch(`./meses/${monthConfig.file}`);
+        if (!response.ok) {
+            throw new Error(`No se pudieron cargar los datos locales del mes ${monthConfig.display}`);
+        }
+        const scriptText = await response.text();
+        const modifiedScript = scriptText.replace(/const\s+inpc\s*=/, "window.inpc =");
+        new Function(modifiedScript)();
+        return window.inpc;
+    }
+}
+
+// 5. Servicio de Inflación (Repository / Facade Pattern)
+class InflationService {
+    constructor() {
+        this.apiProvider = new BanxicoApiInflationProvider();
+        this.localProvider = new LocalFileInflationProvider();
+    }
+
+    async getINPC(monthKey) {
+        try {
+            console.log("Consultando API de Banxico...");
+            return await this.apiProvider.getINPCData(monthKey);
+        } catch (error) {
+            console.warn("Fallo de Banxico API. Utilizando archivos locales de respaldo:", error.message);
+            return await this.localProvider.getINPCData(monthKey);
+        } finally {
+            console.log(`[Service] Consulta de inflación finalizada para el mes: ${monthKey}`);
+        }
+    }
+}
+
+// Instanciamos el servicio único de inflación
+const inflationService = new InflationService();
+
+let currentMonth = localStorage.getItem("selectedMonth") || (window.APP_CONFIG ? window.APP_CONFIG.DEFAULT_MONTH : "diciembre");
 
 async function loadMonthData(monthKey) {
     const config = monthMapping[monthKey] || monthMapping.diciembre;
     try {
-        const response = await fetch(`./meses/${config.file}`);
-        if (!response.ok) {
-            throw new Error(`No se pudo cargar la información para ${config.display}`);
-        }
-        const scriptText = await response.text();
-        
-        // Convertimos el "const inpc =" de los scripts a "window.inpc =" para evitar errores de redeclaración en ámbito global
-        const modifiedScript = scriptText.replace(/const\s+inpc\s*=/, "window.inpc =");
-        
-        // Ejecutamos dinámicamente el script
-        new Function(modifiedScript)();
+        // Obtenemos los datos desde el servicio con patrón de recuperación local automática
+        window.inpc = await inflationService.getINPC(monthKey);
         
         // Actualizamos el DOM del mes activo
         const activeMonthText = document.getElementById("active-month-text");
@@ -175,11 +262,15 @@ async function loadMonthData(monthKey) {
         }
     } catch (error) {
         showModal(`Error al cargar datos de inflación: ${error.message}`);
+    } finally {
+        // En este bloque finally se pueden apagar animaciones de carga (spinners), 
+        // cerrar conexiones o hacer limpieza de variables si fuera necesario.
+        console.log(`[DOM] Carga de UI concluida para: ${monthKey}`);
     }
 }
 
 // Lógica de modo oscuro / claro dinámico
-const currentTheme = localStorage.getItem("theme") || "dark";
+const currentTheme = localStorage.getItem("theme") || (window.APP_CONFIG ? window.APP_CONFIG.DEFAULT_THEME : "dark");
 if (currentTheme === "light") {
     document.body.classList.add("light-mode");
 }
