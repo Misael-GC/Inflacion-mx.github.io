@@ -90,12 +90,15 @@ function onClickButtonDeflacion(){
         const futureFormatted = formatter.format(futurePurchasingPower);
         const lossPercent = ((moneyValue - futurePurchasingPower) / moneyValue * 100).toFixed(2);
         
+        const shareText = `¡Mis ${formatter.format(moneyValue)} pesos de hoy valdrán solo ${futureFormatted} en el año ${futureYear} debido a la inflación! Calcula la proyección de tu dinero en:`;
+
         const resultP = document.getElementById("ResultP");
         resultP.innerHTML = `
             <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Poder Adquisitivo Proyectado (${futureYear}):</div>
             <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
             <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">Pérdida proyectada: <strong>${lossPercent}%</strong></div>
-            <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">Basado en inflación CAGR de ${(cagr * 100).toFixed(2)}%</div>
+            <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-style: italic;">Basado en inflación CAGR de ${(cagr * 100).toFixed(2)}%</div>
+            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i> Compartir Proyección</button>
         `;
         resultP.classList.add("show");
 
@@ -178,11 +181,14 @@ function onClickButtonDeflacion(){
             lossText = `Sin cambios en el poder adquisitivo`;
         }
 
+        const shareText = `¡Mis ${formatter.format(moneyValue)} pesos del año ${anioBaseValue} equivaldrían a ${dineroDeflactadoFormateado} en ${anioValue}! Calcula la inflación de tu dinero en:`;
+
         const resultP = document.getElementById("ResultP");
         resultP.innerHTML = `
             <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">El valor equivalente es:</div>
             <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
-            <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">${lossText}</div>
+            <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400; margin-bottom: 1.5rem;">${lossText}</div>
+            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i> Compartir Resultado</button>
         `;
         resultP.classList.add("show");
 
@@ -673,4 +679,102 @@ function renderHistory() {
 function clearHistory() {
     localStorage.removeItem('calcHistory');
     renderHistory();
+}
+
+let isSharing = false;
+
+window.shareResult = async function(text) {
+    if (isSharing) return;
+    
+    // Detectamos si es un dispositivo móvil
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Si es móvil y tiene soporte nativo, usamos el share nativo
+    if (isMobile && navigator.share) {
+        try {
+            isSharing = true;
+            await navigator.share({
+                title: 'Calculadora de Inflación MX',
+                text: text,
+                url: window.location.href,
+            });
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error("Error al compartir", err);
+                // Fallback si falla el nativo
+                showShareModal(text);
+            }
+        } finally {
+            isSharing = false;
+        }
+    } else {
+        // En escritorio o navegadores sin soporte, mostramos nuestro modal personalizado
+        showShareModal(text);
+    }
+}
+
+// Modal personalizado para copiar y compartir
+function showShareModal(text) {
+    const existingModal = document.getElementById("share-modal-overlay");
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const shareUrl = window.location.href;
+    const fullText = text + " " + shareUrl;
+
+    const modalOverlay = document.createElement("div");
+    modalOverlay.id = "share-modal-overlay";
+    modalOverlay.className = "modal-overlay active";
+    
+    modalOverlay.innerHTML = `
+        <div class="modal-card" style="max-width: 500px;">
+            <div class="modal-icon" style="color: var(--green-color); font-size: 3rem; margin-bottom: 1rem;"><i class="fa-solid fa-share-nodes"></i></div>
+            <h3 style="color: var(--white-color); margin-bottom: 1rem; font-size: 1.8rem; text-align: center;">Comparte tu resultado</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; font-size: 1.2rem;">Copia el siguiente texto para enviarlo por WhatsApp o publicarlo en tus redes:</p>
+            
+            <textarea id="share-textarea" readonly style="width: 100%; height: 120px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 1rem; border-radius: var(--border-radius-sm); resize: none; margin-bottom: 2rem; font-family: inherit; font-size: 1.2rem; line-height: 1.5;">${fullText}</textarea>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="modal-btn" id="share-copy-btn" style="background-color: var(--green-color); color: var(--bg-card); display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex: 1; min-width: 150px; font-weight: 700;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
+                <button type="button" class="modal-btn" id="share-close-btn" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); flex: 1; min-width: 120px;">Cerrar</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+
+    const closeBtn = document.getElementById("share-close-btn");
+    closeBtn.addEventListener("click", () => {
+        modalOverlay.classList.remove("active");
+        setTimeout(() => modalOverlay.remove(), 300);
+    });
+
+    const copyBtn = document.getElementById("share-copy-btn");
+    copyBtn.addEventListener("click", () => {
+        const textarea = document.getElementById("share-textarea");
+        textarea.select();
+        
+        try {
+            // Intentar usar la API moderna primero
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullText);
+            } else {
+                // Fallback para navegadores antiguos
+                document.execCommand("copy");
+            }
+            
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
+            copyBtn.style.backgroundColor = "#4ade80"; 
+            copyBtn.style.color = "#000";
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar Texto';
+                copyBtn.style.backgroundColor = "var(--green-color)";
+                copyBtn.style.color = "var(--bg-card)";
+            }, 2000);
+        } catch (err) {
+            console.error("Error al copiar", err);
+        }
+    });
 }
