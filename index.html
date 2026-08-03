@@ -22,10 +22,16 @@
 <body>
     <header class="header">
         <div>
-            <h1>Inflación en México</h1>
+            <h1 data-i18n="title_main">Inflación en México</h1>
         </div>
         <nav class="header--nav">
             <ul class="menu-horizontal">
+                <!-- Language Toggle -->
+                <li class="lang-toggle-container">
+                    <a href="#" class="lang-btn" data-lang="es">ES</a>
+                    <span style="color: var(--text-muted);">|</span>
+                    <a href="#" class="lang-btn" data-lang="en">EN</a>
+                </li>
                 <li class="li-meses">
                     <a href="#" class="meses"><i class="fa-solid fa-bars"></i></a>
                     <ul class="menu-vertical">
@@ -50,21 +56,21 @@
     </header>
     <main class="container__main">
         <div class="main-container-sub">
-            <h2>Calcula el efecto de la inflación en el poder adquisitivo del dinero</h2> <br>
+            <h2 data-i18n="subtitle_main">Calcula el efecto de la inflación en el poder adquisitivo del dinero</h2> <br>
             <p>
-                 <strong>Advertencia:</strong>  el calculo es anual, es decir, de <strong id="active-month-text">Diciembre</strong>  de cada año. <br><br>
-            Periodo disponible es al ultimo mes que Banxico ha publicado, por lo normal es un mes de atraso al actual mes
+                 <strong id="warning-part1">Advertencia: el calculo es anual, es decir, de </strong><strong id="active-month-text">Diciembre</strong><span id="warning-part2"> de cada año.</span> <br><br>
+            <span data-i18n="period_text">Periodo disponible es al ultimo mes que Banxico ha publicado, por lo normal es un mes de atraso al actual mes</span>
             <br><br>
-                Fuente:  INEGI
+                <span data-i18n="source_text">Fuente: INEGI</span>
             </p>
 
             <div id="history-container" class="history-container">
                 <div class="history-header">
-                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Cálculos Recientes</h3>
+                    <h3 data-i18n="history_title"><i class="fa-solid fa-clock-rotate-left"></i> Cálculos Recientes</h3>
                     <button id="clear-history-btn" class="clear-history-btn" title="Borrar Historial"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
                 <ul id="history-list" class="history-list">
-                    <li class="history-empty">Aún no hay cálculos recientes</li>
+                    <li class="history-empty" data-i18n="history_empty">Aún no hay cálculos recientes</li>
                 </ul>
             </div>
         </div>
@@ -72,33 +78,33 @@
             <form action="" class="form-principal"><br>
                 <!-- Switch de Modo -->
                 <div class="mode-toggle-container">
-                    <span class="mode-label active" id="label-historico">Histórico</span>
+                    <span class="mode-label active" id="label-historico" data-i18n="mode_historic">Histórico</span>
                     <label class="switch">
                         <input type="checkbox" id="modeToggle">
                         <span class="slider round"></span>
                     </label>
-                    <span class="mode-label" id="label-futuro">Proyección 🔮</span>
+                    <span class="mode-label" id="label-futuro" data-i18n="mode_future">Proyección 🔮</span>
                 </div>
                 
-                <label class="form-label" for="Inputmoney" >Escribe el valor de tu dinero</label>
+                <label class="form-label" for="Inputmoney" data-i18n="label_money">Escribe el valor de tu dinero</label>
                 <input id="Inputmoney" type="number" placeholder="100" min="0.01" step="0.01" required> <br>
 
                 <!-- Inputs Modo Histórico -->
                 <div id="historico-inputs">
-                    <label class="form-label" for="InputAnio">Escribe el Año actual o más reciente,</label> 
+                    <label class="form-label" for="InputAnio" data-i18n="label_year_current">Escribe el Año actual o más reciente,</label> 
                     <input id="InputAnio" type="number" placeholder="2023" min="1969" max="2100" step="1" required><br>
 
-                    <label class="form-label" for="InputAnioBase">Elige un año base</label>
+                    <label class="form-label" for="InputAnioBase" data-i18n="label_year_base">Elige un año base</label>
                     <input id="InputAnioBase" type="number" placeholder="2000" min="1969" max="2100" step="1" required><br>
                 </div>
 
                 <!-- Inputs Modo Futuro -->
                 <div id="futuro-inputs" class="hidden-mode">
-                    <label class="form-label" for="InputAnioFuturo">Año a proyectar (Ej. 2035)</label>
+                    <label class="form-label" for="InputAnioFuturo" data-i18n="label_year_future">Año a proyectar (Ej. 2035)</label>
                     <input id="InputAnioFuturo" type="number" placeholder="2035" min="2024" max="2200" step="1"><br>
                 </div>
 
-                <button type="button" onclick="onClickButtonDeflacion()">
+                <button type="button" onclick="onClickButtonDeflacion()" data-i18n="btn_calculate">
                 Calcular
                 </button><br>
                 <p id="ResultP"></p>
@@ -106,17 +112,15 @@
         </section>
         <section class="main--instrucciones">
             <div>
-
-                <p><strong>Año actual o más reciente:</strong> es el numerador, es mayor al año base</p> <br>
-
-                <p><strong>Año base:</strong> es el denominador, es menor al año actual o más reciente</p>
+                <p data-i18n="instr_current"><strong>Año actual o más reciente:</strong> es el numerador, es mayor al año base</p> <br>
+                <p data-i18n="instr_base"><strong>Año base:</strong> es el denominador, es menor al año actual o más reciente</p>
             </div>
         </section>
 
         <!-- Nueva sección para la gráfica interactiva -->
         <section class="main--chart" id="chart-section" style="display: none;">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
-                <button type="button" class="download-chart-btn" onclick="downloadChart()" title="Descargar gráfica como imagen"><i class="fa-solid fa-download"></i> Guardar Imagen</button>
+                <button type="button" class="download-chart-btn" onclick="downloadChart()" title="Descargar gráfica como imagen" data-i18n="btn_download"><i class="fa-solid fa-download"></i> Guardar Imagen</button>
             </div>
             <div class="chart-wrapper">
                 <canvas id="inflationChart"></canvas>
@@ -130,6 +134,7 @@
         <div><a href="https://misael-gomez-cuautle.super.site/portafolio"><i class="fa-solid fa-suitcase"></i></a></div>
     </footer>
     <script src="./config.js"></script>
+    <script src="./i18n.js"></script>
     <script src="./calculos.js"></script>
 </body>
 </html>

@@ -62,12 +62,12 @@ function onClickButtonDeflacion(){
         const currentYear = Number(currentYearObj.name);
 
         if (!rawFuture || isNaN(futureYear) || !Number.isInteger(futureYear)) {
-            showModal("Por favor, ingresa un año futuro válido.");
+            showModal(t('err_valid_year'));
             return;
         }
         
-        if (futureYear <= currentYear || futureYear > 2200) {
-            showModal(`Por favor, ingresa un año a futuro (mayor a ${currentYear}).`);
+        if (futureYear <= currentYear) {
+            showModal(t('err_valid_years_future'));
             return;
         }
 
@@ -90,15 +90,15 @@ function onClickButtonDeflacion(){
         const futureFormatted = formatter.format(futurePurchasingPower);
         const lossPercent = ((moneyValue - futurePurchasingPower) / moneyValue * 100).toFixed(2);
         
-        const shareText = `¡Mis ${formatter.format(moneyValue)} pesos de hoy valdrán solo ${futureFormatted} en el año ${futureYear} debido a la inflación! Calcula la proyección de tu dinero en:`;
+        const shareText = `¡Mis ${formatter.format(moneyValue)} ${t('share_msg_future')} ${futureFormatted} ${t('share_msg_future2')} ${futureYear} ${t('share_msg_future3')}`;
 
         const resultP = document.getElementById("ResultP");
         resultP.innerHTML = `
-            <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Poder Adquisitivo Proyectado (${futureYear}):</div>
+            <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${t('res_future_pow')} (${futureYear}):</div>
             <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
-            <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">Pérdida proyectada: <strong>${lossPercent}%</strong></div>
-            <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-style: italic;">Basado en inflación CAGR de ${(cagr * 100).toFixed(2)}%</div>
-            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i> Compartir Proyección</button>
+            <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400;">${t('res_future_loss')} <strong>${lossPercent}%</strong></div>
+            <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-style: italic;">${t('res_based_on')} ${(cagr * 100).toFixed(2)}%</div>
+            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i>${t('btn_share_future')}</button>
         `;
         resultP.classList.add("show");
 
@@ -132,35 +132,35 @@ function onClickButtonDeflacion(){
         const anioBaseValue = Number(rawAnioBaseValue);
 
         if (!rawAnioValue || !rawAnioBaseValue) {
-            showModal("Por favor, llena todos los campos para poder realizar el cálculo.");
+            showModal(t('err_fill_fields'));
             return;
         }
 
         if (isNaN(anioValue) || isNaN(anioBaseValue) || !Number.isInteger(anioValue) || !Number.isInteger(anioBaseValue)) {
-            showModal("Error: Ingresa únicamente años enteros válidos.");
+            showModal(t('err_valid_integers'));
             return;
         }
 
         if (anioValue < 1969 || anioValue > 2100 || anioBaseValue < 1969 || anioBaseValue > 2100) {
-            showModal("Por favor ingresa años válidos (entre 1969 y la actualidad).");
+            showModal(t('err_valid_years'));
             return;
         }
         
         if (anioBaseValue >= anioValue) {
-            showModal("El año base debe ser estrictamente menor al año actual o más reciente.");
+            showModal(t('err_base_less'));
             return;
         }
 
         const userAnioBase = activeInpc.find(aniosBase => String(aniosBase.name) === String(anioBaseValue));
         if (!userAnioBase){
-            showModal(`El año ${anioBaseValue} aún no está registrado.`);
+            showModal(`El año ${anioBaseValue} ${t('err_not_registered')}`);
             return;
         }
         const valoresBase = userAnioBase.valor;
 
         const userAnio = activeInpc.find(anios => String(anios.name) === String(anioValue));
         if (!userAnio){
-            showModal(`El año ${anioValue} aún no está registrado.`);
+            showModal(`El año ${anioValue} ${t('err_not_registered')}`);
             return;
         }
         
@@ -174,21 +174,21 @@ function onClickButtonDeflacion(){
         
         let lossText = "";
         if (lossPercent > 0) {
-            lossText = `Pérdida de poder adquisitivo: <strong>${lossPercent}%</strong>`;
+            lossText = `${t('res_loss')} <strong>${lossPercent}%</strong>`;
         } else if (lossPercent < 0) {
-            lossText = `Ganancia de poder adquisitivo: <strong>${Math.abs(lossPercent)}%</strong>`;
+            lossText = `${t('res_gain')} <strong>${Math.abs(lossPercent)}%</strong>`;
         } else {
-            lossText = `Sin cambios en el poder adquisitivo`;
+            lossText = t('res_no_change');
         }
 
-        const shareText = `¡Mis ${formatter.format(moneyValue)} pesos del año ${anioBaseValue} equivaldrían a ${dineroDeflactadoFormateado} en ${anioValue}! Calcula la inflación de tu dinero en:`;
+        const shareText = `¡Mis ${formatter.format(moneyValue)} ${t('share_msg_historic')} ${anioBaseValue} ${t('share_msg_historic2')} ${dineroDeflactadoFormateado} en ${anioValue}! ${t('share_msg_historic3')}`;
 
         const resultP = document.getElementById("ResultP");
         resultP.innerHTML = `
-            <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">El valor equivalente es:</div>
+            <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${t('res_equivalent')}</div>
             <div id="animatedResult" style="font-size: 2.8rem; font-weight: 700; color: var(--green-color); margin-bottom: 0.8rem; text-shadow: 0 0 10px rgba(153, 200, 74, 0.2);">$0.00</div>
             <div style="font-size: 1.3rem; color: var(--text-main); font-weight: 400; margin-bottom: 1.5rem;">${lossText}</div>
-            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i> Compartir Resultado</button>
+            <button type="button" class="share-btn" onclick="shareResult('${shareText}')"><i class="fa-solid fa-share-nodes"></i>${t('btn_share_historic')}</button>
         `;
         resultP.classList.add("show");
 
@@ -659,7 +659,7 @@ function renderHistory() {
     const history = getHistory();
     
     if (history.length === 0) {
-        historyList.innerHTML = '<li class="history-empty">Aún no hay cálculos recientes</li>';
+        historyList.innerHTML = `<li class="history-empty" data-i18n="history_empty">${t('history_empty')}</li>`;
         return;
     }
     
@@ -730,14 +730,14 @@ function showShareModal(text) {
     modalOverlay.innerHTML = `
         <div class="modal-card" style="max-width: 500px;">
             <div class="modal-icon" style="color: var(--green-color); font-size: 3rem; margin-bottom: 1rem;"><i class="fa-solid fa-share-nodes"></i></div>
-            <h3 style="color: var(--white-color); margin-bottom: 1rem; font-size: 1.8rem; text-align: center;">Comparte tu resultado</h3>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; font-size: 1.2rem;">Copia el siguiente texto para enviarlo por WhatsApp o publicarlo en tus redes:</p>
+            <h3 style="color: var(--white-color); margin-bottom: 1rem; font-size: 1.8rem; text-align: center;">${t('share_title')}</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; font-size: 1.2rem;">${t('share_desc')}</p>
             
             <textarea id="share-textarea" readonly style="width: 100%; height: 120px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 1rem; border-radius: var(--border-radius-sm); resize: none; margin-bottom: 2rem; font-family: inherit; font-size: 1.2rem; line-height: 1.5;">${fullText}</textarea>
             
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <button type="button" class="modal-btn" id="share-copy-btn" style="background-color: var(--green-color); color: var(--bg-card); display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex: 1; min-width: 150px; font-weight: 700;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
-                <button type="button" class="modal-btn" id="share-close-btn" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); flex: 1; min-width: 120px;">Cerrar</button>
+                <button type="button" class="modal-btn" id="share-copy-btn" style="background-color: var(--green-color); color: var(--bg-card); display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex: 1; min-width: 150px; font-weight: 700;"><i class="fa-solid fa-copy"></i>${t('share_btn_copy')}</button>
+                <button type="button" class="modal-btn" id="share-close-btn" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); flex: 1; min-width: 120px;">${t('share_btn_close')}</button>
             </div>
         </div>
     `;
@@ -764,12 +764,12 @@ function showShareModal(text) {
                 document.execCommand("copy");
             }
             
-            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
+            copyBtn.innerHTML = `<i class="fa-solid fa-check"></i>${t('share_copied')}`;
             copyBtn.style.backgroundColor = "#4ade80"; 
             copyBtn.style.color = "#000";
             
             setTimeout(() => {
-                copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar Texto';
+                copyBtn.innerHTML = `<i class="fa-solid fa-copy"></i>${t('share_btn_copy')}`;
                 copyBtn.style.backgroundColor = "var(--green-color)";
                 copyBtn.style.color = "var(--bg-card)";
             }, 2000);

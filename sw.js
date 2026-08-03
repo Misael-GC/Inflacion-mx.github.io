@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inflacion-mx-v10';
+const CACHE_NAME = 'inflacion-mx-v11';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
   './css/laptop.css',
   './css/desktop.css',
   './config.js',
+  './i18n.js',
   './calculos.js',
   './manifest.json',
   './icons/icon.jpg',

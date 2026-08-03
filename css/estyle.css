@@ -675,6 +675,36 @@ input:checked + .slider:before {
     background: rgba(153, 200, 74, 0.1);
 }
 
+/*----------------- Language Selector -----------------*/
+.lang-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 1rem;
+    background: var(--bg-card);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-full);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.lang-btn {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.lang-btn:hover {
+    color: var(--white-color);
+}
+
+.lang-btn.active {
+    color: var(--green-color);
+    text-shadow: 0 0 10px rgba(153, 200, 74, 0.5);
+}
+
 /*----------------- Media Queries (Responsive) -----------------*/
 @media (max-width: 900px) {
     .container__main {
